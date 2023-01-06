@@ -5,8 +5,14 @@ import * as authorActions from "../../redux/actions/authorActions";
 import PropTypes from "prop-types";
 import { bindActionCreators } from "redux";
 import CourseList from "./CourseList";
+import { Redirect } from "react-router-dom";
+import Spinner from "../common/Spinner";
 
 class CoursesPage extends React.Component {
+  state = {
+    redirectToAddCourse: false,
+  };
+
   componentDidMount() {
     const { courses, authors, actions } = this.props;
 
@@ -23,36 +29,26 @@ class CoursesPage extends React.Component {
     }
   }
 
-  // state = {
-  //   course: {
-  //     title: "",
-  //   },
-  // };
-
-  // handleChange = (event) => {
-  //   const course = { ...this.state.course, title: event.target.value };
-  //   this.setState({ course });
-  // };
-
-  // handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   this.props.actions.createCourse(this.state.course);
-  // };
-
   render() {
     return (
       <>
-        {/* <form onSubmit={this.handleSubmit}> */}
+        {this.state.redirectToAddCourse && <Redirect to="/course" />}
         <h2>Courses</h2>
-        <CourseList courses={this.props.courses} />
-        {/* <h3>Add Course</h3>
-        <input
-          type="text"
-          onChange={this.handleChange}
-          value={this.state.course.title}
-        /> */}
-        {/* <input type="submit" value="Save" /> */}
-        {/* </form> */}
+        {this.props.loading ? (
+          <Spinner />
+        ) : (
+          <>
+            <button
+              style={{ marginBottom: 20 }}
+              className="btn btn-primary add-course"
+              onClick={() => this.setState({ redirectToAddCourse: true })}
+            >
+              {" "}
+              Add Course{" "}
+            </button>
+            <CourseList courses={this.props.courses} />
+          </>
+        )}
       </>
     );
   }
@@ -78,6 +74,7 @@ function mapStateToProps(state) {
             };
           }),
     authors: state.authors,
+    loading: state.apiCallsInProgress > 0,
   };
 }
 
